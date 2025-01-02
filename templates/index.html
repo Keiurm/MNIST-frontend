@@ -20,7 +20,12 @@ wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="a
 
   <div class="container" style="max-width:600px;">
     <div class="canvas-container"  style="display: flex; justify-content: center; margin: 20px 0;" >
-      <canvas id="canvas" class="border border-info"width="200" height="200"></canvas>
+      <canvas id="canvas" width="200" height="200"></canvas>
+      <style>
+        canvas {
+          border: 1px solid #3A98B9;
+        }
+      </style>
     </div>
     
     <input type="button" id="send" value="判定" class="btn btn-outline-primary w-100" style="transition: background-color 0.3s;"><br>
@@ -39,13 +44,14 @@ wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="a
     </style>
     
     <form method="post" action="/estimate" enctype="multipart/form-data" style="margin-top: 10px;">
-      <input type="file" name="img" class="btn btn-outline-secondary w-100" style="transition: background-color 0.3s;"><br>
+      <input type="file" name="img" class="btn btn-outline-secondary w-100" id="fileInput" style="transition: background-color 0.3s;"><br>
       <style>
         input[type="file"]:hover {
           background-color: #3A98B9;
           color: black;
         }
       </style>
+      
     </form>
     <table id="result" class="table"></table>
   </div>

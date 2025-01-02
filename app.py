@@ -73,13 +73,10 @@ def hello():
 
 @app.route("/estimate", methods=["POST"])
 def estimate():
-
     enc_data = request.form["img"]
     dec_data = base64.b64decode(enc_data.split(",")[1])
     img = Image.open(BytesIO(dec_data))
     img.save("pic.png")
-    arr = np.array(img)
-    # ここでキャンバスに描画されているか判定（しきい値は例）
 
     nn.load_parameters("results.nnp")
 
@@ -90,8 +87,6 @@ def estimate():
     img = img.resize((28, 28))  # ネットワーク入力に併せてリサイズ
     img = img.convert("L")  # グレースケール化
     img = PIL.ImageOps.invert(img)
-    if arr.sum() < 10:
-        return jsonify({"error": "No drawing detected."})
     x.d = np.array(img) * (1.0 / 255.0)
 
     y.forward()
@@ -100,7 +95,6 @@ def estimate():
     tmp["estiamtes"] = "{}".format(y.d.argmax(axis=1))
     for num, prob in enumerate(y.d[0]):
         tmp["n" + str(num)] = "{:.6f}%".format(prob * 100)
-    app.logger.setLevel("INFO")
 
     return jsonify(tmp)
 
