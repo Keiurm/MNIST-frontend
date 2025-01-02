@@ -7,35 +7,53 @@ import numpy as np
 from PIL import Image
 
 
-
 def network(x, test=False):
     """
     Neural Network Consoleから出力されたネットワーク構造のPythonコード
     """
     # Input:x -> 1,28,28
-    # Convolution -> 16,22,22
-    h = PF.convolution(x, 16, (7, 7), (0, 0), name='Convolution')
-    # ReLU
-    h = F.relu(h, True)
-    # MaxPooling -> 16,11,11
-    h = F.max_pooling(h, (2, 2), (2, 2))
-    # Convolution_2 -> 30,9,9
-    h = PF.convolution(h, 30, (3, 3), (0, 0), name='Convolution_2')
-    # MaxPooling_2 -> 30,4,4
-    h = F.max_pooling(h, (2, 2), (2, 2))
-    # Tanh_2
-    h = F.tanh(h)
-    # Affine -> 150
-    h = PF.affine(h, (150,), name='Affine')
-    # ReLU_2
-    h = F.relu(h, True)
-    # Affine_2 -> 10
-    h = PF.affine(h, (10,), name='Affine_2')
+    # BinaryConnectConvolution -> 64,24,24
+    h = PF.binary_connect_convolution(
+        x, outmaps=64, pad=(0, 0), name="BinaryConnectConvolution", kernel=(5, 5)
+    )
+    # MaxPooling -> 64,12,12
+    h = F.max_pooling(h, kernel=(2, 2), stride=(2, 2))
+    # BatchNormalization
+    h = PF.batch_normalization(
+        h, decay_rate=0.5, eps=0.01, batch_stat=not test, name="BatchNormalization"
+    )
+    # BinarySigmoid
+    h = F.binary_sigmoid(h)
+    # BinaryConnectConvolution_2 -> 64,8,8
+    h = PF.binary_connect_convolution(
+        h, outmaps=64, pad=(0, 0), name="BinaryConnectConvolution_2", kernel=(5, 5)
+    )
+    # MaxPooling_2 -> 64,4,4
+    h = F.max_pooling(h, kernel=(2, 2), stride=(2, 2))
+    # BatchNormalization_2
+    h = PF.batch_normalization(
+        h, decay_rate=0.5, eps=0.01, batch_stat=not test, name="BatchNormalization_2"
+    )
+    # BinarySigmoid_2
+    h = F.binary_sigmoid(h)
+    # BinaryConnectAffine -> 512
+    h = PF.binary_connect_affine(h, n_outmaps=512, name="BinaryConnectAffine")
+    # BatchNormalization_3
+    h = PF.batch_normalization(
+        h, decay_rate=0.5, eps=0.01, batch_stat=not test, name="BatchNormalization_3"
+    )
+    # BinarySigmoid_3
+    h = F.binary_sigmoid(h)
+    # BinaryConnectAffine_2 -> 10
+    h = PF.binary_connect_affine(h, n_outmaps=10, name="BinaryConnectAffine_2")
+    # BatchNormalization_4
+    h = PF.batch_normalization(
+        h, decay_rate=0.5, eps=0.01, batch_stat=not test, name="BatchNormalization_4"
+    )
     # Softmax
     h = F.softmax(h)
     # CategoricalCrossEntropy -> 1
-    # 下記の評価用のレイヤーは推論には不要なのでコメントアウト
-    #h = F.categorical_cross_entropy(h, y)
+    # h = F.categorical_cross_entropy(h, y)
     return h
 
 
